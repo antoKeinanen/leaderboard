@@ -8,11 +8,13 @@ datasource db {
 }
 
 model User {
-  id           String  @id @default(cuid())
-  username     String  @unique
+  id           String   @id @default(cuid())
+  username     String   @unique
   passwordHash String
   accessToken  String
   entries      Entry[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 enum Gamemode {
@@ -22,8 +24,21 @@ enum Gamemode {
 }
 
 model Entry {
-  id       String   @id @default(cuid())
-  User     User?    @relation(fields: [userId], references: [id])
-  userId   String?
-  gamemode Gamemode
+  id        String   @id @default(cuid())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  gamemode  Gamemode
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  file      File?
+  fileId    String?
+}
+
+model File {
+  id        String   @id @default(cuid())
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Entry     Entry    @relation(fields: [entryId], references: [id])
+  entryId   String   @unique
 }

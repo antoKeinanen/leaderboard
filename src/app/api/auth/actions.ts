@@ -55,5 +55,5 @@ export async function signin(
 
   if (!user) return { reason: "INV_CREDENTIALS" };
 
-  return user.accessToken as string;
+  return user.accessToken;
 }
