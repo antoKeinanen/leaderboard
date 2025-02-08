@@ -24,14 +24,16 @@ enum Gamemode {
 }
 
 model Entry {
-  id        String   @id @default(cuid())
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    String?
-  gamemode  Gamemode
+  id       String   @id @default(cuid())
+  User     User?    @relation(fields: [userId], references: [id])
+  userId   String?
+  gamemode Gamemode
+  file     File?
+  fileId   String?
+  time     Int
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  file      File?
-  fileId    String?
 }
 
 model File {
