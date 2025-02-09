@@ -25,11 +25,11 @@ enum Gamemode {
 
 model Entry {
   id       String   @id @default(cuid())
-  User     User?    @relation(fields: [userId], references: [id])
-  userId   String?
+  User     User     @relation(fields: [userId], references: [id])
+  userId   String
   gamemode Gamemode
-  file     File?
-  fileId   String?
+  file     File     @relation(fields: [fileId], references: [id])
+  fileId   String   @unique
   time     Int
 
   createdAt DateTime @default(now())
@@ -41,6 +41,6 @@ model File {
   url       String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Entry     Entry    @relation(fields: [entryId], references: [id])
-  entryId   String   @unique
+  Entry     Entry?
+  entryId   String?
 }

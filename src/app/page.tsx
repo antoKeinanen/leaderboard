@@ -1,22 +1,123 @@
 "use client";
 
-import { UploadButton } from "~/util/uploadthing";
+import { Gamemode } from "@prisma/client";
+import { useEffect, useState } from "react";
+import { cn } from "~/util/cn";
+import { type EntryUserJoin, getTopEntriesByGame } from "./api/entry/actions";
+import EntryModal from "~/elements/entryModal";
+import AuthModal from "~/elements/authModal";
+
+function GamemodeButton({
+  gamemode,
+  setGamemode,
+  ownGamemode,
+  label,
+}: {
+  gamemode: Gamemode;
+  setGamemode: (gamemode: Gamemode) => void;
+  ownGamemode: Gamemode;
+  label: string;
+}) {
+  return (
+    <button
+      className={cn("rounded-md px-2 py-1", {
+        "bg-emerald-700": gamemode == ownGamemode,
+      })}
+      onClick={() => setGamemode(ownGamemode)}
+    >
+      {label}
+    </button>
+  );
+}
 
 export default function HomePage() {
+  const [gamemode, setGamemode] = useState<Gamemode>(Gamemode.MINESWEEPER_EASY);
+  const [entries, setEntries] = useState<EntryUserJoin[]>([]);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setToken(window.localStorage.getItem("token"));
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const { entries: newEntries } = await getTopEntriesByGame(gamemode);
+      console.log(newEntries);
+      setEntries(newEntries);
+    })().catch((ex) => console.error("Error getting entries", ex));
+  }, [gamemode]);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <UploadButton
-          endpoint="imageUploader"
-          onClientUploadComplete={(res: unknown) => {
-            // Do something with the response
-            console.log("Files: ", res);
-            alert("Upload Completed");
-          }}
-          onUploadError={(error: Error) => {
-            // Do something with the error.
-            alert(`ERROR! ${error.message}`);
-          }}
-        />
+    <main className="pattern-rectangles flex min-h-screen w-screen flex-col p-32 text-emerald-100 pattern-bg-minesweeper-light-green pattern-minesweeper-dark-green pattern-opacity-100 pattern-size-16">
+      <section className="rounded-lg border-2 border-emerald-950 bg-emerald-900 px-8 py-4">
+        <h1 className="text-4xl">Kumpulan miinaharava leaderboard</h1>
+
+        <div className="flex items-end justify-between">
+          <div className="mt-8 w-fit space-x-2 rounded-md bg-emerald-600">
+            <GamemodeButton
+              gamemode={gamemode}
+              ownGamemode="MINESWEEPER_EASY"
+              label="Easy"
+              setGamemode={setGamemode}
+            />
+            <GamemodeButton
+              gamemode={gamemode}
+              ownGamemode="MINESWEEPER_MEDIUM"
+              label="Medium"
+              setGamemode={setGamemode}
+            />
+            <GamemodeButton
+              gamemode={gamemode}
+              ownGamemode="MINESWEEPER_HARD"
+              label="Hard"
+              setGamemode={setGamemode}
+            />
+          </div>
+          <div className="flex gap-2">
+            <EntryModal token={token ?? ""} />
+            <AuthModal setToken={setToken} />
+          </div>
+        </div>
+      </section>
+      <section className="mt-6 rounded-lg border-2 border-emerald-950 bg-emerald-900 px-8 py-4">
+        <table className="w-full table-auto">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Aika</th>
+              <th>Nimi</th>
+              <th>Pvm.</th>
+              <th>Kuva</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.length > 0 ? (
+              entries.map((entry, i) => (
+                <tr className="text-center even:bg-emerald-800" key={i}>
+                  <td className="font-bold">{i + 1}</td>
+                  <td>{entry.time} sec</td>
+                  <td>{entry.User.username}</td>
+                  <td>{Intl.DateTimeFormat("fi").format(entry.createdAt)}</td>
+                  <td className="flex justify-center">
+                    <a href={entry.file?.url ?? "#"} target="_blank">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        className="w-32 object-contain"
+                        src={entry.file?.url}
+                        alt={
+                          entry.file?.url ? "User submission proof image" : ""
+                        }
+                      />
+                    </a>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <p className="w-full text-center">No times submitted</p>
+            )}
+          </tbody>
+        </table>
+      </section>
     </main>
   );
 }

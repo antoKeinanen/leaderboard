@@ -18,16 +18,7 @@ const auth = async (req: Request) => {
   });
   if (!user) return null;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const entryId: string = (await req.json())?.entryId;
-  if (!entryId || typeof entryId !== "string") return null;
-
-  const entry = await db.entry.findFirst({
-    where: { id: entryId, userId: user.id },
-  });
-  if (!entry) return null;
-
-  return { user, entryId };
+  return { user };
 };
 
 export const ourFileRouter = {
@@ -51,17 +42,14 @@ export const ourFileRouter = {
       if (!data) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { entryId: data.entryId };
+      return {};
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ file }) => {
       const created = await db.file.create({
-        data: { url: file.url, entryId: metadata.entryId },
+        data: { url: file.url },
       });
 
-      await db.entry.update({
-        where: { id: metadata.entryId },
-        data: { fileId: created.id },
-      });
+      return { id: created.id };
     }),
 } satisfies FileRouter;
 
