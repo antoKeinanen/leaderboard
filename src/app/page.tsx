@@ -40,6 +40,14 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    if (!token) {
+      localStorage.removeItem("token");
+      return;
+    }
+    localStorage.setItem("token", token);
+  }, [token]);
+
+  useEffect(() => {
     (async () => {
       const { entries: newEntries } = await getTopEntriesByGame(gamemode);
       console.log(newEntries);
