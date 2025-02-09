@@ -47,13 +47,13 @@ function AuthModal({ setToken }: { setToken: (token: string) => void }) {
   }
 
   return (
-    <Modal open={open} setOpen={setOpen} label="Login">
+    <Modal open={open} setOpen={setOpen} label="Kirjaudu sisään">
       <section className="flex gap-8">
         <form onSubmit={handleLogin} className="flex w-1/2 flex-col space-y-2">
-          <h1 className="text-2xl">Login</h1>
+          <h1 className="text-2xl">Kirjaudu sisään</h1>
 
           <div className="flex flex-col">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Käyttäjänimi</label>
             <input
               className="rounded-md bg-emerald-950 px-4 py-2"
               type="text"
@@ -62,7 +62,7 @@ function AuthModal({ setToken }: { setToken: (token: string) => void }) {
             />
           </div>
           <div className="flex flex-col">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Salasana</label>
             <input
               className="rounded-md bg-emerald-950 px-4 py-2"
               type="password"
@@ -78,10 +78,10 @@ function AuthModal({ setToken }: { setToken: (token: string) => void }) {
         </form>
 
         <form onSubmit={handleSignup} className="flex w-1/2 flex-col space-y-2">
-          <h1 className="text-2xl">Sign up</h1>
+          <h1 className="text-2xl">Rekisteröidy</h1>
 
           <div className="flex flex-col">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Käyttäjänimi</label>
             <input
               className="rounded-md bg-emerald-950 px-4 py-2"
               type="text"
@@ -90,7 +90,7 @@ function AuthModal({ setToken }: { setToken: (token: string) => void }) {
             />
           </div>
           <div className="flex flex-col">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Salasana</label>
             <input
               className="rounded-md bg-emerald-950 px-4 py-2"
               type="password"
@@ -101,7 +101,7 @@ function AuthModal({ setToken }: { setToken: (token: string) => void }) {
           <input
             className="rounded-md bg-emerald-950 px-4 py-2"
             type="submit"
-            value="Sign up"
+            value="Rekisteröidy"
           />
         </form>
       </section>

@@ -32,14 +32,14 @@ function EntryModal({ token }: { token: string }) {
   }
 
   return (
-    <Modal label="Publish time" open={open} setOpen={setOpen}>
-      <h1 className="text-2xl">Publish a time</h1>
+    <Modal label="Julkaise aika" open={open} setOpen={setOpen}>
+      <h1 className="text-2xl">Julkaise aika</h1>
 
       <form
         onSubmit={handleCreateEntry}
         className="flex flex-grow-0 flex-col space-y-2 py-4"
       >
-        <label htmlFor="gamemode">Gamemode</label>
+        <label htmlFor="gamemode">Vaikeusaste</label>
         <select
           className="rounded-md bg-emerald-950 px-4 py-2"
           name="gamemode"
@@ -51,7 +51,7 @@ function EntryModal({ token }: { token: string }) {
           </option>
           <option value={Gamemode.MINESWEEPER_HARD}>Minesweeper - Hard</option>
         </select>
-        <label htmlFor="time">Time</label>
+        <label htmlFor="time">Aika</label>
         <input
           className="bg-emerald-950 px-4 py-2 outline-none ring-0"
           type="number"
@@ -62,12 +62,12 @@ function EntryModal({ token }: { token: string }) {
         />
 
         <label htmlFor="upload" className="pt-2">
-          Proof
+          Kuva
         </label>
         <div id="upload" className="flex justify-start">
           <UploadButton
             disabled={uploadDone}
-            content={{ button: uploadDone ? "Upload done" : "Upload" }}
+            content={{ button: uploadDone ? "Kuva ladattu" : "Lataa kuva" }}
             headers={{
               Authorization: "Bearer " + token,
             }}
@@ -107,7 +107,7 @@ function EntryModal({ token }: { token: string }) {
           <input
             className="w-fit rounded-md bg-emerald-950 px-4 py-2"
             type="submit"
-            value="Submit"
+            value="Lähetä"
           />
         </div>
       </form>
