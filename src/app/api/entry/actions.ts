@@ -37,6 +37,7 @@ export async function getTopEntriesByGame(
   page ??= 1;
   const entries = await db.entry.findMany({
     where: { gamemode },
+    orderBy: { time: "asc" },
     include: { User: true, file: true },
     take: 25,
     skip: (page - 1) * 25,
