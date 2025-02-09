@@ -5,9 +5,10 @@ interface ModalProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   children: React.ReactNode;
   label: string;
+  onClose?: () => void;
 }
 
-function Modal({ children, label, open, setOpen }: ModalProps) {
+function Modal({ children, label, open, setOpen, onClose }: ModalProps) {
   return (
     <>
       <button
@@ -19,7 +20,7 @@ function Modal({ children, label, open, setOpen }: ModalProps) {
       {open && (
         <>
           <div
-            onClick={() => setOpen(false)}
+            onClick={() => (onClose ? onClose() : setOpen(false))}
             className="absolute left-0 right-0 top-0 ml-0 flex h-screen w-screen items-center justify-center bg-slate-950 bg-opacity-75"
           >
             <dialog
