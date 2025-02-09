@@ -1,11 +1,13 @@
 import { type FormEvent, useState } from "react";
+import { toast } from "react-toastify";
 import { z } from "zod";
 import { signin, signup } from "~/app/api/auth/actions";
 import Modal from "~/components/modal";
+import { XIcon } from "lucide-react";
 
 const credentialsSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+  username: z.string().nonempty("Käyttäjänimen tulee olla vähintään 1 merkki"),
+  password: z.string().min(8, "Salasanan tulee olla vähintään 8 merkkiä"),
 });
 
 function AuthModal({ setToken }: { setToken: (token: string) => void }) {
@@ -13,42 +15,92 @@ function AuthModal({ setToken }: { setToken: (token: string) => void }) {
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const toastId = toast("Kirjaudutaan sisään...", {
+      autoClose: false,
+      isLoading: true,
+    });
     const formData = new FormData(event.target as HTMLFormElement);
-    const data = credentialsSchema.parse(Object.fromEntries(formData));
+    const data = credentialsSchema.safeParse(Object.fromEntries(formData));
 
-    const auth = await signin(data.username, data.password);
+    if (!data.success) {
+      toast.dismiss(toastId);
+      data.error.errors.map((error) => toast.error(error.message));
+      return;
+    }
+
+    const auth = await signin(data.data.username, data.data.password);
 
     if (typeof auth === "string") {
       window.localStorage.setItem("token", auth);
       setOpen(false);
       setToken(auth);
+      toast.update(toastId, {
+        render: "Kirjautuminen onnistui",
+        type: "success",
+        autoClose: 5000,
+        isLoading: false,
+      });
       return;
     }
 
+    toast.update(toastId, {
+      render: auth.reason,
+      type: "error",
+      autoClose: 5000,
+      isLoading: false,
+    });
     console.error("Failed to login:", auth);
   }
 
   async function handleSignup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const toastId = toast("Rekisteröidytään...", {
+      autoClose: false,
+      isLoading: true,
+    });
 
     const formData = new FormData(event.target as HTMLFormElement);
-    const data = credentialsSchema.parse(Object.fromEntries(formData));
+    const data = credentialsSchema.safeParse(Object.fromEntries(formData));
 
-    const auth = await signup(data.username, data.password);
+    if (!data.success) {
+      toast.dismiss(toastId);
+      data.error.errors.map((error) => toast.error(error.message));
+      return;
+    }
+
+    const auth = await signup(data.data.username, data.data.password);
 
     if (typeof auth === "string") {
       window.localStorage.setItem("token", auth);
       setOpen(false);
       setToken(auth);
+      toast.update(toastId, {
+        render: "Rekisteröityminen onnistui",
+        type: "success",
+        autoClose: 5000,
+        isLoading: false,
+      });
       return;
     }
 
-    console.error("Failed to login:", auth);
+    toast.update(toastId, {
+      render: auth.reason,
+      type: "error",
+      autoClose: 5000,
+      isLoading: false,
+    });
+    console.error("Failed to signup:", auth);
   }
 
   return (
     <Modal open={open} setOpen={setOpen} label="Kirjaudu sisään">
-      <section className="flex gap-8">
+      <section className="relative flex gap-8">
+        <button
+          className="absolute right-2 top-2"
+          onClick={() => setOpen(false)}
+        >
+          <XIcon />
+        </button>
         <form onSubmit={handleLogin} className="flex w-1/2 flex-col space-y-2">
           <h1 className="text-2xl">Kirjaudu sisään</h1>
 
