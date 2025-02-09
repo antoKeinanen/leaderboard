@@ -31,7 +31,7 @@ function GamemodeButton({
 }
 
 export default function HomePage() {
-  const [gamemode, setGamemode] = useState<Gamemode>(Gamemode.MINESWEEPER_EASY);
+  const [gamemode, setGamemode] = useState<Gamemode>(Gamemode.MINESWEEPER_MEDIUM);
   const [entries, setEntries] = useState<EntryUserJoin[]>([]);
   const [token, setToken] = useState<string | null>(null);
 
