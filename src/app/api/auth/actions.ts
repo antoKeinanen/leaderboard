@@ -19,7 +19,7 @@ export async function signup(
   password: string,
 ): Promise<string | Error> {
   if (password.length < 8) {
-    return { reason: "PASSWORD_LENGTH" };
+    return { reason: "Salasanan tulee olla 8 merkkiä tai pidempi" };
   }
 
   const passwordHash = await argon2.hash(password + env.PEPPER);
@@ -47,13 +47,16 @@ export async function signin(
   username: string,
   password: string,
 ): Promise<string | Error> {
-  const passwordHash = await argon2.hash(password + env.PEPPER);
-
   const user = await db.user.findFirst({
-    where: { username, passwordHash },
+    where: { username },
   });
 
-  if (!user) return { reason: "INV_CREDENTIALS" };
+  if (!user) return { reason: "Virheellinen käyttäjänimi ja/tai salasana" };
+
+  const hashMatch = await argon2.verify(user.passwordHash, password + env.PEPPER);
+
+  if (!hashMatch)
+    return { reason: "Virheellinen käyttäjänimi ja/tai salasana" };
 
   return user.accessToken;
 }
