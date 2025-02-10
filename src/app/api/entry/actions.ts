@@ -1,6 +1,6 @@
 "use server";
 
-import type { Gamemode, Entry } from "@prisma/client";
+import { Gamemode, type Entry } from "@prisma/client";
 import { db } from "~/server/db";
 
 export async function createEntry(
@@ -52,6 +52,31 @@ export async function getTopEntriesByGame(
   const total = 0;
 
   return { entries: formattedEntries, total };
+}
+
+export async function getAllEntries(page?: number) {
+  page ??= 1;
+
+  const entriesByGamemode = await Promise.all(
+    Object.keys(Gamemode).map(async (gamemode) => {
+      const entries = await db.entry.findMany({
+        where: { gamemode: Gamemode[gamemode as keyof typeof Gamemode] },
+        orderBy: { time: "asc" },
+        include: { User: true, file: true },
+        take: 25,
+        skip: (page - 1) * 25,
+      });
+      return { gamemode, entries };
+    }),
+  );
+
+  return entriesByGamemode.reduce(
+    (acc, { gamemode, entries }) => {
+      acc[gamemode as keyof typeof Gamemode] = entries;
+      return acc;
+    },
+    {} as Record<Gamemode, EntryUserJoin[]>,
+  );
 }
 
 export async function getEntriesByUser(userId: string) {

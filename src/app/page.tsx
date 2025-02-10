@@ -3,7 +3,11 @@
 import { Gamemode } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { cn } from "~/util/cn";
-import { type EntryUserJoin, getTopEntriesByGame } from "./api/entry/actions";
+import {
+  type EntryUserJoin,
+  getAllEntries,
+  getTopEntriesByGame,
+} from "./api/entry/actions";
 import EntryModal from "~/elements/entryModal";
 import AuthModal from "~/elements/authModal";
 import { useAuth } from "~/util/useAuth";
@@ -35,12 +39,14 @@ export default function HomePage() {
   const [gamemode, setGamemode] = useState<Gamemode>(
     Gamemode.MINESWEEPER_MEDIUM,
   );
-  const [entries, setEntries] = useState<EntryUserJoin[]>([]);
+  const [entries, setEntries] = useState<Record<Gamemode, EntryUserJoin[]>>(
+    {} as Record<Gamemode, EntryUserJoin[]>,
+  );
   const { logout, token } = useAuth();
 
   useEffect(() => {
     (async () => {
-      const { entries: newEntries } = await getTopEntriesByGame(gamemode);
+      const newEntries = await getAllEntries();
       console.log(newEntries);
       setEntries(newEntries);
     })().catch((ex) => console.error("Error getting entries", ex));
@@ -101,7 +107,7 @@ export default function HomePage() {
             </tr>
           </thead>
           <tbody>
-            {entries.map((entry, i) => (
+            {(entries[gamemode] ?? []).map((entry, i) => (
               <tr className="text-center even:bg-emerald-800" key={i}>
                 <td className="font-bold">{i + 1}</td>
                 <td>{entry.time} sec</td>
