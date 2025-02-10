@@ -6,6 +6,7 @@ import { z } from "zod";
 import { createEntry } from "~/app/api/entry/actions";
 import Modal from "~/components/modal";
 import { UploadButton } from "~/util/uploadthing";
+import { useAuth } from "~/util/useAuth";
 
 const entryCreationSchema = z.object({
   gamemode: z.enum(
@@ -19,10 +20,11 @@ const entryCreationSchema = z.object({
   token: z.string({ required_error: "Kirjaudu ensin sisään" }),
 });
 
-function EntryModal({ token }: { token: string }) {
+function EntryModal() {
   const [open, setOpen] = useState(false);
   const [uploadDone, setUploadDone] = useState(false);
   const [fileId, setFileId] = useState("");
+  const { token } = useAuth();
 
   async function handleCreateEntry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -64,10 +66,7 @@ function EntryModal({ token }: { token: string }) {
   return (
     <Modal label="Julkaise aika" open={open} setOpen={setOpen} onClose={close}>
       <section className="relative">
-        <button
-          className="absolute right-2 top-2"
-          onClick={() => close()}
-        >
+        <button className="absolute right-2 top-2" onClick={() => close()}>
           <XIcon />
         </button>
         <h1 className="text-2xl">Julkaise aika</h1>
@@ -138,7 +137,7 @@ function EntryModal({ token }: { token: string }) {
           />
           <input
             hidden
-            value={token}
+            value={token ?? ""}
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             onChange={() => {}}
             name="token"

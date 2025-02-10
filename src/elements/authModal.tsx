@@ -4,14 +4,16 @@ import { z } from "zod";
 import { signin, signup } from "~/app/api/auth/actions";
 import Modal from "~/components/modal";
 import { XIcon } from "lucide-react";
+import { useAuth } from "~/util/useAuth";
 
 const credentialsSchema = z.object({
   username: z.string().nonempty("Käyttäjänimen tulee olla vähintään 1 merkki"),
   password: z.string().min(8, "Salasanan tulee olla vähintään 8 merkkiä"),
 });
 
-function AuthModal({ setToken }: { setToken: (token: string) => void }) {
+function AuthModal() {
   const [open, setOpen] = useState(false);
+  const { setToken } = useAuth();
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

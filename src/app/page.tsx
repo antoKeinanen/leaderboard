@@ -6,6 +6,7 @@ import { cn } from "~/util/cn";
 import { type EntryUserJoin, getTopEntriesByGame } from "./api/entry/actions";
 import EntryModal from "~/elements/entryModal";
 import AuthModal from "~/elements/authModal";
+import { useAuth } from "~/util/useAuth";
 
 function GamemodeButton({
   gamemode,
@@ -31,21 +32,11 @@ function GamemodeButton({
 }
 
 export default function HomePage() {
-  const [gamemode, setGamemode] = useState<Gamemode>(Gamemode.MINESWEEPER_MEDIUM);
+  const [gamemode, setGamemode] = useState<Gamemode>(
+    Gamemode.MINESWEEPER_MEDIUM,
+  );
   const [entries, setEntries] = useState<EntryUserJoin[]>([]);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    setToken(window.localStorage.getItem("token"));
-  }, []);
-
-  useEffect(() => {
-    if (!token) {
-      localStorage.removeItem("token");
-      return;
-    }
-    localStorage.setItem("token", token);
-  }, [token]);
+  const { logout, token } = useAuth();
 
   useEffect(() => {
     (async () => {
@@ -84,16 +75,16 @@ export default function HomePage() {
           <div className="flex gap-2">
             {token ? (
               <>
-                <EntryModal token={token ?? ""} />
+                <EntryModal />
                 <button
-                  onClick={() => setToken(null)}
+                  onClick={() => logout()}
                   className="h-fit w-fit rounded-md bg-emerald-600 px-4 py-2"
                 >
                   Kirjaudu ulos
                 </button>
               </>
             ) : (
-              <AuthModal setToken={setToken} />
+              <AuthModal />
             )}
           </div>
         </div>
