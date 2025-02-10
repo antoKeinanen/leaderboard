@@ -3,11 +3,7 @@
 import { Gamemode } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { cn } from "~/util/cn";
-import {
-  type EntryUserJoin,
-  getAllEntries,
-  getTopEntriesByGame,
-} from "./api/entry/actions";
+import { type EntryUserJoin, getAllEntries } from "./api/entry/actions";
 import EntryModal from "~/elements/entryModal";
 import AuthModal from "~/elements/authModal";
 import { useAuth } from "~/util/useAuth";
@@ -47,13 +43,12 @@ export default function HomePage() {
   useEffect(() => {
     (async () => {
       const newEntries = await getAllEntries();
-      console.log(newEntries);
       setEntries(newEntries);
     })().catch((ex) => console.error("Error getting entries", ex));
   }, [gamemode]);
 
   return (
-    <main className="pattern-rectangles pattern-bg-minesweeper-light-green pattern-minesweeper-dark-green pattern-opacity-100 pattern-size-16 flex min-h-screen w-screen flex-col p-32 text-emerald-100">
+    <main className="pattern-rectangles flex min-h-screen w-screen flex-col p-32 text-emerald-100 pattern-bg-minesweeper-light-green pattern-minesweeper-dark-green pattern-opacity-100 pattern-size-16">
       <section className="rounded-lg border-2 border-emerald-950 bg-emerald-900 px-8 py-4">
         <h1 className="text-4xl">Kumpulan miinaharava leaderboard</h1>
 

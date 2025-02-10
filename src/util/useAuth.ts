@@ -7,16 +7,21 @@ export interface AuthState {
   logout: () => void;
 }
 
+function getInitialToken() {
+  console.log("intial", localStorage.getItem("token") ?? null);
+  return localStorage.getItem("token") ?? null;
+}
+
 export const useAuth = create<AuthState, [["zustand/persist", unknown]]>(
   persist(
-    (get, set) => ({
+    (set, _get) => ({
       token: null,
-      setToken: (token) => (set().token = token),
-      logout: () => (set().token = null),
+      setToken: (token) => set({ token }),
+      logout: () => set({ token: null }),
     }),
     {
       name: "token",
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => localStorage),
     },
   ),
 );
